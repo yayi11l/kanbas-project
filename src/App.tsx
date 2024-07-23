@@ -1,5 +1,6 @@
 import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./content/pages/Home";
+import Login from "./user/pages/Login";
 
 function App() {
   return (
@@ -8,7 +9,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Navigate to="home" />} />
           <Route path="/home" element={<Home />} />
-          <Route path="/login" element={<h1>Login</h1>} />
+          <Route path="/login" element={<Login />} />
           <Route path="/profile" element={<h1>Profile</h1>} />
           <Route path="/search" element={<h1>Search</h1>} />
         </Routes>
