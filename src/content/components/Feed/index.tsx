@@ -1,4 +1,4 @@
-import Posts from "../Posts";
+import Posts from "./Posts/Posts";
 import InputBox from "./InputBox";
 import Stories from "./Stories";
 
