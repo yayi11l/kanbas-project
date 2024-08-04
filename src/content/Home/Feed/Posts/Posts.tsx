@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import Post from "./Post";
+import * as client from "../client";
+
     // Dummy data for testing
 const samplePosts = [
       {
@@ -33,22 +35,34 @@ const samplePosts = [
 
 export default function Posts() {
   const [realtimePosts, setRealTimePosts] = useState<any>(samplePosts);
+  const fetchPosts = async () => {
+    try {
+      const posts = await client.fetchAllPosts(); // Adjust the URL to your backend endpoint
+      setRealTimePosts(posts);
+      console.log(posts);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    }
+  }
 
   useEffect(() => {
-    setRealTimePosts(samplePosts);
+    fetchPosts();
   }, []);
 
   return (
     <div>
       {realtimePosts.map((post : any) => (
         <Post
-          key={post.id}
-          name={post.name}
-          message={post.message}
-          email={post.email}
-          timestamp={post.timestamp}
-          image={post.image}
-          postImage={post.postImage}
+        key={post._id}
+        pid={post._id}
+        user={post.user}
+        content={post.content}
+        images={post.images}
+        likes={post.likes}
+        comments={post.comments}
+        shareCount={post.shareCount}
+        createdAt={post.createdAt}
+        updatedAt={post.updatedAt}
         />
       )
       )}
