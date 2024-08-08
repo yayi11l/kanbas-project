@@ -30,7 +30,6 @@ export default function Post({ pid, user, content, images, likes, comments, shar
     }
   };
 
-
   const handleComment = async () => {
     if (!currentUser) return;
     const commentText = prompt("Enter your comment:");

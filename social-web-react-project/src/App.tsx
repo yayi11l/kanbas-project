@@ -1,9 +1,9 @@
 import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
-import Home from "./content/pages/Home";
-import Profile from "./content/pages/Profile";
-import Followers from "./content/pages/Profile/Activity/userActs/Followers";
-import Following from "./content/pages/Profile/Activity/userActs/Following";
-import Reviews from "./content/pages/Profile/Activity/postActs/Review";
+import Home from "./content/Home";
+import Profile from "./content/Profile";
+import Followers from "./content/Profile/Activity/userActs/Followers";
+import Following from "./content/Profile/Activity/userActs/Following";
+import Reviews from "./content/Profile/Activity/postActs/Review";
 import Login from "./content/Account/Login";
 import store from "./store";
 import { Provider } from "react-redux";

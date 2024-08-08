@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import Header from '../../../shared/components/Header';
+import Header from '../../shared/components/Header';
 import PersonalInfo from './personalInfo'; 
 
 

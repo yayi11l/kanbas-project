@@ -1,14 +1,42 @@
 import { FaPhotoFilm, FaRegFaceGrin } from "react-icons/fa6";
 import { FaUserTag } from "react-icons/fa";
 import { useRef, useState } from "react";
+import * as client from "../client";
+import { useSelector } from "react-redux";
 
-export default function InputBox() {
+export default function InputBox({ onNewPost }: { onNewPost: () => void }) {
   const filePickerRef = useRef<HTMLInputElement | null>(null);
   const [imageToPost, setImageToPost] = useState<string | ArrayBuffer | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [postContent, setPostContent] = useState<string>("");
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
 
-  const sendPost = (e: any) => {
+  const sendPost = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle the post submission here
+    if (postContent.trim()) {
+      try {
+        // Create FormData object to handle multipart form data
+        const formData = new FormData();
+        formData.append('user', currentUser._id);
+        formData.append('content', postContent);
+        if (imageFile) {
+          formData.append('images', imageFile); // For single file upload
+        }
+
+        // Send the FormData to the server
+        await client.createPost(formData);
+
+        // Clear input fields
+        setPostContent("");
+        setImageToPost(null);
+        setImageFile(null);
+
+        // Notify parent component about the new post
+        onNewPost();
+      } catch (error) {
+        console.error("Error creating post:", error);
+      }
+    }
   };
 
   const addImageToPost = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -18,12 +46,14 @@ export default function InputBox() {
       reader.readAsDataURL(file);
       reader.onload = () => {
         setImageToPost(reader.result);
+        setImageFile(file);
       };
     }
   };
 
   const removeImg = () => {
     setImageToPost(null);
+    setImageFile(null);
   };
 
   return (
@@ -38,7 +68,9 @@ export default function InputBox() {
         />
         <form onSubmit={sendPost} className="flex flex-1">
           <input 
-            type="text"  
+            type="text"
+            value={postContent}
+            onChange={(e) => setPostContent(e.target.value)}
             className="rounded-full h-12 bg-gray-100 flex-grow px-5 focus:outline-none"
             placeholder="What's on your mind?"
           />
