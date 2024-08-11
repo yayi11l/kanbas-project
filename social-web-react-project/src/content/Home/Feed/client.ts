@@ -41,6 +41,16 @@ export const fetchFollowings = async (userId : any) => {
   return data;
 }
 
+export const fetchFollowers = async (userId : any) => {
+  const {data} = await axiosWithCredentials.get(`${REMOTE_SERVER}/api/users/${userId}/followers`);
+  return data;
+}
+
+export const fetchReviews = async (userId : any) => {
+  const {data} = await axiosWithCredentials.get(`${REMOTE_SERVER}/api/users/${userId}/reviews`);
+  return data;
+}
+
 export const likePost = async (postId : any, userId : any) => {
   const { data } = await axiosWithCredentials.post(`${POSTS_API}/${postId}/like`, { userId });
   return data;

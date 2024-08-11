@@ -1,99 +1,84 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import Header from '../../shared/components/Header';
-import PersonalInfo from './personalInfo'; 
-
-
-interface User {
-    _id: string;
-    username: string;
-    firstName: string;
-    lastName: string;
-    profilePicture: string;
-    coverPhoto: string;
-    bio: string;
-    location: string;
-    website: string;
-    email: string;
-    password: string; 
-    followers: string[];
-    following: string[];
-    posts: string[];
-    likes: string[];
-    reviews: string[];
-    comments: string[];
-  }
-
-const getLoggedInUser = async (): Promise<User | null> => {
-  const response = await fetch('/api/users/me'); 
-  if (response.ok) {
-    return await response.json();
-  }
-  return null;
-};
+import PersonalInfo from './personalInfo';
+import { useSelector } from "react-redux";
+import * as client from "../../shared/client";
+import '../Profile/profile.css';
 
 export default function ProfilePage() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
+  const { uid } = useParams<{ uid?: string }>();
+  const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { userId } = useParams<{ userId: string }>();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const userResponse = await fetch(`/api/users/${userId}`);
-        if (!userResponse.ok) {
-          throw new Error('Failed to fetch user data');
-        }
-        const userData: User = await userResponse.json();
-        setUser(userData);
+        let userIdToFetch = currentUser?._id;
 
-        const loggedInUserData = await getLoggedInUser();
-        setLoggedInUser(loggedInUserData);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        if (uid) {
+          userIdToFetch = uid;
+        } else if (!currentUser) {
+         
+          setError("User not logged in.");
+          setLoading(false);
+          return;
+        }
+
+        const data = await client.findUserById(userIdToFetch);
+        setUserData(data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setError("Failed to load user data.");
       } finally {
         setLoading(false);
       }
     };
 
     fetchUserData();
-  }, [userId]);
+  }, [uid, currentUser]);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (!user) return <div>User not found</div>;
+  
+  useEffect(() => {
+    if (uid && currentUser && uid === currentUser._id) {
+      navigate('/profile', { replace: true });
+    }
+  }, [uid, currentUser, navigate]);
+
+  // Ensure currentUser and userData are available before rendering
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+  if (error) {
+    return <p>{error}</p>;
+  }
+  if (!userData) {
+    return <p>User data not available.</p>;
+  }
+
+  const isCurrentUserProfile = !uid || (currentUser && uid === currentUser._id);
 
   return (
-    <div className="web-social-profile-page">
+    <div className="profile-page">
       <Header />
-      <div className="profile-content">
-        <div className="profile-header">
-          <img src={user.coverPhoto} alt={`${user.firstName} ${user.lastName}`} className="cover-picture" />
-          <img src={user.profilePicture} alt={`${user.firstName} ${user.lastName}`} className="profile-picture" />
-          <h1>{user.firstName} {user.lastName}</h1>
-          <p>@{user.username}</p>
+      <div className="profile-container">
+        <PersonalInfo userData={userData} currentUser={currentUser} />
+        <div className="profile-links-container">
+          <div className="profile-links">
+            <Link to={`/profile/${userData._id}/following`}>
+              Following: <span>{userData.following.length}</span>
+            </Link>
+            <Link to={`/profile/${userData._id}/followers`}>
+              Followers: <span>{userData.followers.length}</span>
+            </Link>
+            <Link to={`/profile/${userData._id}/reviews`}>
+              Reviews: <span>{userData.reviews.length}</span>
+            </Link>
+          </div>
         </div>
-        <div className="profile-details">
-          {loggedInUser && loggedInUser._id === user._id ? (
-            <PersonalInfo user={user} />
-          ) : (
-            <div>
-              <p>{user.bio}</p>
-              <p>Location: {user.location}</p>
-              <p>Website: <a href={user.website} target="_blank" rel="noopener noreferrer">{user.website}</a></p>
-            </div>
-          )}
-        </div>
-        <div className="profile-stats">
-          <p>Followers: {user.followers.length}</p>
-          <p>Following: {user.following.length}</p>
-          <p>Posts: {user.posts.length}</p>
-        </div>
-        <Link to={`/users/${user._id}/followers`}>View Followers</Link>
-        <Link to={`/users/${user._id}/following`}>View Following</Link>
-        <Link to={`/users/${user._id}/reviews`}>View Reviews</Link>
       </div>
     </div>
   );

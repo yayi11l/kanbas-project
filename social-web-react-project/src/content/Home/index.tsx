@@ -1,6 +1,6 @@
 import Header from "../../shared/components/Header";
 import Feed from "./Feed";
-// import Sidebar from "./Sidebar";
+import Sidebar from "./Sidebar";
 import Widgets from "./Widgets";
 import { useSelector } from 'react-redux';
 
@@ -11,7 +11,7 @@ export default function Home() {
     <div>
       <Header />
       <div className="flex">
-        {/* <Sidebar /> */}
+        <Sidebar />
         <Feed />
         {currentUser && <Widgets userId={currentUser._id} />}
       </div>

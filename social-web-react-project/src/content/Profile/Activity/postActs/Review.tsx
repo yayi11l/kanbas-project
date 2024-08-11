@@ -1,19 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import * as client from '../../../Home/Feed/client';
 
 interface Post {
   _id: string;
   content: string;
   createdAt: string;
 }
-
-const fetchPost = async (postId: string): Promise<Post | null> => {
-  const response = await fetch(`/api/posts/${postId}`);
-  if (response.ok) {
-    return response.json();
-  }
-  return null;
-};
 
 const Reviews: React.FC = () => {
   const [reviewedPosts, setReviewedPosts] = useState<Post[]>([]);
@@ -24,19 +17,8 @@ const Reviews: React.FC = () => {
   useEffect(() => {
     const fetchReviewedPosts = async () => {
       try {
-        const userResponse = await fetch(`/api/users/${userId}`);
-        if (!userResponse.ok) {
-          throw new Error('Failed to fetch user data');
-        }
-        const userData = await userResponse.json();
-        const posts: Post[] = [];
-        for (const postId of userData.reviews) {
-          const post = await fetchPost(postId);
-          if (post) {
-            posts.push(post);
-          }
-        }
-        setReviewedPosts(posts);
+        const data = await client.fetchReviews(userId);
+        setReviewedPosts(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
@@ -53,14 +35,18 @@ const Reviews: React.FC = () => {
   return (
     <div id="web-social-review">
       <h3>Reviewed Posts</h3>
-      <ul>
-        {reviewedPosts.map((post) => (
-          <li key={post._id}>
-            <h4>{post.content}</h4>
-            <p>{post.createdAt}</p>
-          </li>
-        ))}
-      </ul>
+      {reviewedPosts.length > 0 ? (
+        <ul>
+          {reviewedPosts.map((post) => (
+            <li key={post._id} style={{ marginBottom: '1rem', padding: '1rem', border: '1px solid #ddd', borderRadius: '8px' }}>
+              <h4>{post.content}</h4>
+              <p>{new Date(post.createdAt).toLocaleDateString()}</p>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>No reviews available.</p>
+      )}
     </div>
   );
 };

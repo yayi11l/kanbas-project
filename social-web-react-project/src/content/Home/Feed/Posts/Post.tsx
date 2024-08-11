@@ -1,21 +1,41 @@
-import { FaRegThumbsUp, FaThumbsUp } from "react-icons/fa6";
+import { FaRegThumbsUp, FaThumbsUp } from "react-icons/fa";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
 import { FaRegShareSquare } from "react-icons/fa";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import { likePost, unlikePost, addComment, removeComment, sharePost } from "../client";
+import { likePost, unlikePost, addComment, removeComment, sharePost, fetchPostById } from "../client"; // Add getPost import
 
-export default function Post({ pid, user, content, images, likes, comments, shareCount, createdAt, updatedAt }: any) {
-  const [likeList, setLikeList] = useState(likes);
-  const [commentList, setCommentList] = useState(comments);
-  const [shares, setShares] = useState(shareCount);
+export default function Post({ pid }: any) {
+  const [post, setPost] = useState<any>(null);
+  const [likeList, setLikeList] = useState<any>([]);
+  const [commentList, setCommentList] = useState<any>([]);
+  const [shares, setShares] = useState<any>(0);
   const { currentUser } = useSelector((state: any) => state.accountReducer);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const fetchedPost = await fetchPostById(pid);
+        setPost(fetchedPost);
+        console.log(post.images);
+        setLikeList(fetchedPost.likes);
+        setCommentList(fetchedPost.comments);
+        setShares(fetchedPost.shareCount);
+      } catch (error) {
+        console.error("Error fetching post:", error);
+      }
+    };
+    fetchPost();
+  }, [pid]);
+
+  if (!post) return <div>Loading...</div>;
+
   const isLiked = currentUser && likeList ? likeList.some((like: any) => like._id === currentUser._id) : false;
 
-  const handleLike = async () => {
+  const handleLike = async (e: any) => {
+    e.stopPropagation();
     if (!currentUser) return;
     try {
       if (isLiked) {
@@ -30,7 +50,8 @@ export default function Post({ pid, user, content, images, likes, comments, shar
     }
   };
 
-  const handleComment = async () => {
+  const handleComment = async (e: any) => {
+    e.stopPropagation();
     if (!currentUser) return;
     const commentText = prompt("Enter your comment:");
     if (commentText) {
@@ -44,7 +65,8 @@ export default function Post({ pid, user, content, images, likes, comments, shar
     }
   };
 
-  const handleRemoveComment = async (commentId: any) => {
+  const handleRemoveComment = async (commentId: string, e: any) => {
+    e.stopPropagation();
     if (!currentUser) return;
     try {
       await removeComment(pid, commentId);
@@ -54,7 +76,8 @@ export default function Post({ pid, user, content, images, likes, comments, shar
     }
   };
 
-  const handleShare = async () => {
+  const handleShare = async (e: any) => {
+    e.stopPropagation();
     if (!currentUser) return;
     try {
       await sharePost(pid);
@@ -65,7 +88,6 @@ export default function Post({ pid, user, content, images, likes, comments, shar
   };
 
   const goToPostDetails = () => {
-    // history.push(`/posts/${pid}`);
     navigate(`/posts/detail/${pid}`);
   };
 
@@ -73,28 +95,28 @@ export default function Post({ pid, user, content, images, likes, comments, shar
     <div className="flex flex-col" onClick={goToPostDetails}>
       <div className="p-5 bg-white mt-5 rounded-2xl shadow-sm">
         <div className="flex items-center space-x-2">
-          {user && (
+          {post.user && (
             <>
               <img
                 className="rounded-full"
-                src={user.profilePicture}
+                src={post.user.profilePicture}
                 width={40}
                 height={40}
-                alt={user.username}
+                alt={post.user.username}
               />
               <div>
-                <p className="font-medium">{user.username}</p>
-                <p className="text-xs text-gray-400">{new Date(createdAt).toLocaleString()}</p>
+                <p className="font-medium">{post.user.username}</p>
+                <p className="text-xs text-gray-400">{new Date(post.createdAt).toLocaleString()}</p>
               </div>
             </>
           )}
         </div>
-        <p className="pt-4">{content}</p>
+        <p className="pt-4">{post.content}</p>
       </div>
-      {images && images.length > 0 && (
-        <div className="relative h-56 md:h-86 bg-white">
-          {images.map((img: any, index: any) => (
-            <img key={index} src={img} alt="Post Image" />
+      {post.images && post.images.length > 0 && (
+        <div className="images relative h-56 md:h-86 bg-white">
+          {post.images.map((image: any) => (
+            <img key={image._id} src={`${process.env.REACT_APP_REMOTE_SERVER}/uploads/${image.filename}`} alt={image.filename} />
           ))}
         </div>
       )}

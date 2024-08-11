@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Post from "./Post";
 import * as client from "../client";
 import InputBox from "../InputBox";
+import { BsCheckLg } from "react-icons/bs";
 
 export default function Posts() {
   const [realtimePosts, setRealTimePosts] = useState<any[]>([]);
@@ -12,6 +13,7 @@ export default function Posts() {
     try {
       const posts = await client.fetchAllPosts(); // Fetch real posts from your API
       setRealTimePosts(posts);
+      console.log(posts);
     } catch (error) {
       setError("Error fetching posts.");
       console.error("Error fetching posts:", error);
