@@ -121,10 +121,14 @@ const PostDetails = () => {
         <p className="pt-4 text-base">{post.content}</p>
       </div>
       {post.images && post.images.length > 0 && (
-        <div className="relative h-56 md:h-86 bg-white">
-          {post.images.map((img: string, index: number) => (
-            <img key={index} src={img} alt={`Post Image ${index}`} className="object-cover w-full h-full" />
-          ))}
+        <div className="relative bg-white">
+        {post.images.map((image: any) => (
+          <img
+            key={image._id}
+            src={`${process.env.REACT_APP_REMOTE_SERVER}/uploads/${image.filename}`}
+            alt={image.filename}
+          className="object-cover w-full h-full" />
+        ))}
         </div>
       )}
 

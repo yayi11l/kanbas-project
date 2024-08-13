@@ -7,3 +7,8 @@ export const findUserById = async (userId: string) => {
     .get(`${USERS_API}/${userId}`);
   return response.data;
 };
+
+export const findUsersByPartialName = async (name: string) => {
+  const response = await axios.get(`${USERS_API}?name=${name}`);
+  return response.data;
+};

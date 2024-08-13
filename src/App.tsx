@@ -6,6 +6,7 @@ import { Provider } from "react-redux";
 import ProtectedRoute from "./shared/components/ProtectedRoute";
 import Signup from "./content/Account/Signup";
 import PostDetails from "./content/Home/Feed/Posts/PostDetails";
+import SearchResults from "./content/Search";
 
 function App() {
   return (
@@ -19,7 +20,8 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/posts/detail/:pid" element={<PostDetails />} />
             <Route path="/profile" element={<h1>Profile</h1>} />
-            <Route path="/search" element={<h1>Search</h1>} />
+            <Route path="/search" element={<SearchResults />} />
+            {/* <Route path="/search/:criteria" element={<SearchResults />} /> */}
           </Routes>
         </div>
       </HashRouter>
