@@ -17,18 +17,19 @@ const Reviews: React.FC = () => {
   useEffect(() => {
     const fetchReviewedPosts = async () => {
       try {
+        console.log('Fetching reviews for userId:', userId);
         const data = await client.fetchReviews(userId);
         setReviewedPosts(data);
       } catch (err) {
+        console.error('Error fetching reviews:', err);
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchReviewedPosts();
   }, [userId]);
-
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
