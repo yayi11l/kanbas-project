@@ -112,9 +112,9 @@ export default function ProfilePage() {
             <Link to={`/profile/${userData._id}/followers`}>
               Followers: <span>{userData.followers.length}</span>
             </Link>
-            <Link to={`/profile/${userData._id}/reviews`}>
+            {/* <Link to={`/profile/${userData._id}/reviews`}>
               Reviews: <span>{userData.reviews.length}</span>
-            </Link>
+            </Link> */}
           </div>
           
         </div>

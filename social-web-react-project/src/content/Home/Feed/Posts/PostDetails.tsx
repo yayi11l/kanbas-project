@@ -104,13 +104,13 @@ const PostDetails = () => {
         <div className="flex items-center space-x-2">
           {post.user && (
             <>
-              <img
+              {/* <img
                 className="rounded-full"
                 src={post.user.profilePicture}
                 width={40}
                 height={40}
                 alt={post.user.username}
-              />
+              /> */}
               <div>
                 <p className="font-medium text-lg">{post.user.username}</p>
                 <p className="text-xs text-gray-400">{new Date(post.createdAt).toLocaleString()}</p>

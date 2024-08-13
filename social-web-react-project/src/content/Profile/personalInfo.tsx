@@ -50,7 +50,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({ userData, currentUser }) =>
             <div className="profile-content">
               <img src={userData.profilePicture || ''} alt="Profile Photo" className="profile-photo" />
               <span className="profile-name">{userData.firstName || ''} {userData.lastName || ''}</span>
-              {isCurrentUser && userData.email && (
+              {(isCurrentUser || currentUser.role === "ADMIN")&& userData.email && (
                 <p className="email">{userData.email}</p>
               )}
               <div className="location-container">
@@ -64,11 +64,12 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({ userData, currentUser }) =>
                 </a>
               </div>
               <p className="bio">{userData.bio || ''}</p>
+              <p className="bio">Role: {userData.role || ''}</p>
             </div>
           </div>
           <br />
           <div className='button-container'>
-            {isCurrentUser && (
+            {(isCurrentUser || currentUser.role === "ADMIN" ) && (
               <button onClick={() => setIsEditing(true)} className="edit-button">
                 Edit
               </button>

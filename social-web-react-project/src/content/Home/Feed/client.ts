@@ -47,7 +47,7 @@ export const fetchFollowers = async (userId : any) => {
 }
 
 export const fetchReviews = async (userId:any) => {
-  const response = await axios.get(`${REMOTE_SERVER}/api/users/${userId}/reviews`);
+  const response = await axiosWithCredentials.get(`${REMOTE_SERVER}/api/users/${userId}/reviews`);
   return response.data;
 };
 
