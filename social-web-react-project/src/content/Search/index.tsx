@@ -52,6 +52,7 @@ export default function SearchResults() {
                 <NameCard 
                 key={user._id}
                 name={user.username}
+                userId={user._id}
                 />
               ))
             ) : (

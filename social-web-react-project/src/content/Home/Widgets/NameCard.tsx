@@ -1,9 +1,17 @@
-export default function NameCard({src, name} : any) {
+import { useNavigate } from "react-router";
+
+export default function NameCard({src, name, userId} : any) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/profile/${userId}`);
+  };
   return (
-    <div className="flex items-center space-x-3 mb-2 relative hover:bg-gray-200 cursor-pointer p-2 rounded-xl">
+    <div className="flex items-center space-x-3 mb-2 relative hover:bg-gray-200 cursor-pointer p-2 rounded-xl"
+         onClick={handleClick}>
       <img 
       className="rounded-full"
-      // src={src} 
+      src={src} 
       width={50}
       height={50}
       alt=""/>

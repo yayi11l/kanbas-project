@@ -40,6 +40,7 @@ export default function Widgets({ userId } : any) {
             key={contact._id} 
             src={contact.profilePicture} 
             name={contact.username} 
+            userId={contact._id}
           />
         ))
       ) : (
