@@ -19,7 +19,7 @@ export default function Post({ pid }: any) {
       try {
         const fetchedPost = await fetchPostById(pid);
         setPost(fetchedPost);
-        console.log(post.images);
+        // console.log(post.images);
         setLikeList(fetchedPost.likes);
         setCommentList(fetchedPost.comments);
         setShares(fetchedPost.shareCount);
@@ -114,9 +114,14 @@ export default function Post({ pid }: any) {
         <p className="pt-4">{post.content}</p>
       </div>
       {post.images && post.images.length > 0 && (
-        <div className="images relative h-56 md:h-86 bg-white">
+        <div className="relative h-56 md:h-86 bg-white flex flex-wrap justify-center">
           {post.images.map((image: any) => (
-            <img key={image._id} src={`${process.env.REACT_APP_REMOTE_SERVER}/uploads/${image.filename}`} alt={image.filename} />
+            <img
+              key={image._id}
+              src={`${process.env.REACT_APP_REMOTE_SERVER}/uploads/${image.filename}`}
+              alt={image.filename}
+              className="object-cover w-auto max-w-full max-h-full"
+            />
           ))}
         </div>
       )}

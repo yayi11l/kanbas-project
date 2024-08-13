@@ -104,13 +104,13 @@ const PostDetails = () => {
         <div className="flex items-center space-x-2">
           {post.user && (
             <>
-              {/* <img
+              <img
                 className="rounded-full"
                 src={post.user.profilePicture}
                 width={40}
                 height={40}
                 alt={post.user.username}
-              /> */}
+              />
               <div>
                 <p className="font-medium text-lg">{post.user.username}</p>
                 <p className="text-xs text-gray-400">{new Date(post.createdAt).toLocaleString()}</p>
@@ -121,10 +121,14 @@ const PostDetails = () => {
         <p className="pt-4 text-base">{post.content}</p>
       </div>
       {post.images && post.images.length > 0 && (
-        <div className="relative h-56 md:h-86 bg-white">
-          {post.images.map((img: string, index: number) => (
-            <img key={index} src={img} alt={`Post Image ${index}`} className="object-cover w-full h-full" />
-          ))}
+        <div className="relative bg-white">
+        {post.images.map((image: any) => (
+          <img
+            key={image._id}
+            src={`${process.env.REACT_APP_REMOTE_SERVER}/uploads/${image.filename}`}
+            alt={image.filename}
+          className="object-cover w-full h-full" />
+        ))}
         </div>
       )}
 

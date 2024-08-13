@@ -54,3 +54,8 @@ export const unfollowUser = async (loggedInUserId: string, profileUserId: string
     throw error;
   }
 };
+
+export const findUsersByPartialName = async (name: string) => {
+  const response = await axios.get(`${USERS_API}?name=${name}`);
+  return response.data;
+};

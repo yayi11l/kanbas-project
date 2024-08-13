@@ -10,6 +10,8 @@ import { Provider } from "react-redux";
 import ProtectedRoute from "./shared/components/ProtectedRoute";
 import Signup from "./content/Account/Signup";
 import PostDetails from "./content/Home/Feed/Posts/PostDetails";
+import SearchResults from "./content/Search";
+
 
 function App() {
   return (
@@ -27,7 +29,7 @@ function App() {
           <Route path="/profile/:userId/followers" element={<Followers />} />
           <Route path="/profile/:userId/following" element={<Following />} />
           <Route path="/profile/:userId/reviews" element={<Reviews />} />
-          <Route path="/search" element={<h1>Search</h1>} />
+          <Route path="/search" element={<SearchResults />} />
         </Routes>
       </div>
     </HashRouter>

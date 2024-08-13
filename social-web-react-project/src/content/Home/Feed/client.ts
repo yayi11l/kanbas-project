@@ -75,3 +75,8 @@ export const sharePost = async (postId : any) => {
   const { data } = await axiosWithCredentials.post(`${POSTS_API}/${postId}/share`);
   return data;
 };
+
+export const fetchPostsByContent = async (content : any) => {
+  const { data } = await axiosWithCredentials.get(`${POSTS_API}?content=${content}`);
+  return data;
+};

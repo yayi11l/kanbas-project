@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import { BsSearch, BsShop } from "react-icons/bs";
-import { FaRegBell } from "react-icons/fa";
-import { FaHouse } from "react-icons/fa6";
-import { TiGroup, TiPlus } from "react-icons/ti";
-import { LuMonitorPlay } from "react-icons/lu";
+import { BsSearch } from "react-icons/bs";
+import { TiPlus } from "react-icons/ti";
 import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
 import HeaderIcon from "../HeaderIcon";
+import { FaRegBell } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import * as client from "../../../content/Account/client";
+import * as accountClient from "../../../content/Account/client";
 import { setCurrentUser } from "../../../content/Account/reducer";
 import { useNavigate } from "react-router";
 
@@ -16,10 +15,20 @@ export default function Header() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
+  const [userQuery, setUserQuery] = useState("");
+  const [postQuery, setPostQuery] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const handleSearch = (type: string, query: string) => {
+    if (type === 'name') {
+      navigate(`/search?name=${query}`);
+    } else if (type === 'content') {
+      navigate(`/search?content=${query}`);
+    }
+  };
+
   const signout = async () => {
-    await client.signout();
+    await accountClient.signout();
     dispatch(setCurrentUser(null));
     navigate("/login");
   };
@@ -52,23 +61,40 @@ export default function Header() {
           className="mr-2"
         />
       </div>
-      <div className="flex ml-16 items-center rounded-full bg-gray-100 p-2 me-3">
-        <BsSearch className="h6 text-gray-600" />
+      {/* User Search Bar */}
+      <div className="flex ml-16 items-center rounded-full bg-gray-100 p-2 me-3 w-full max-w-lg">
+        <BsSearch className="text-gray-600" />
         <input
           type="text"
-          placeholder="Search BlueBook"
-          className="hidden md:inline-flex ml-2 items-center bg-transparent 
-               outline-none placeholder-gray-500 flex-shrink"
+          placeholder="Search users in BlueBook"
+          value={userQuery}
+          onChange={(e) => setUserQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              handleSearch('name', userQuery);
+            }
+          }}
+          className="ml-2 bg-transparent outline-none placeholder-gray-500 flex-grow"
         />
       </div>
 
       <div className="flex flex-grow justify-center">
         {/* Center content goes here */}
-        <div className="flex space-x-6 md:space-x-2">
-          <HeaderIcon active Icon={FaHouse} />
-          <HeaderIcon Icon={LuMonitorPlay} />
-          <HeaderIcon Icon={BsShop} />
-          <HeaderIcon Icon={TiGroup} />
+        {/* Post Search Bar */}
+        <div className="flex ml-16 items-center rounded-full bg-gray-100 p-2 me-3 w-full max-w-lg">
+          <BsSearch className="text-gray-600" />
+          <input
+            type="text"
+            placeholder="Search posts in BlueBook"
+            value={postQuery}
+            onChange={(e) => setPostQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleSearch('content', postQuery);
+              }
+            }}
+            className="ml-2 bg-transparent outline-none placeholder-gray-500 flex-grow"
+          />
         </div>
       </div>
 

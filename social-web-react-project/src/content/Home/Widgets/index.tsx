@@ -3,7 +3,7 @@ import { MdPhotoCameraFront } from 'react-icons/md';
 import { IoSearchOutline } from 'react-icons/io5';
 import { BsThreeDots } from 'react-icons/bs';
 import * as client from '../Feed/client';
-import Following from './Following';
+import NameCard from './NameCard';
 
 export default function Widgets({ userId } : any) {
   const [following, setFollowing] = useState<any[]>([]);
@@ -36,7 +36,7 @@ export default function Widgets({ userId } : any) {
       </div>
       {following.length > 0 ? (
         following.map((contact :any) => (
-          <Following 
+          <NameCard 
             key={contact._id} 
             src={contact.profilePicture} 
             name={contact.username} 
