@@ -3,34 +3,33 @@ import EditPersonalInfo from './EditPersonalInfo';
 import "../Profile/profile.css";
 import { IoLocationOutline } from "react-icons/io5";
 import { FaLink } from "react-icons/fa";
+import { useSelector } from 'react-redux';
+
 
 interface PersonalInfoProps {
-  userData: any; 
-  currentUser: any; 
+  currentUser: any;
 }
 
-const PersonalInfo: React.FC<PersonalInfoProps> = ({ userData, currentUser }) => {
-  const [editableUserData, setEditableUserData] = useState(userData);
+const PersonalInfo: React.FC<PersonalInfoProps> = ({ currentUser }) => {
+  const profile = useSelector((state: any) => state.profileReducer.profile);
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState('');
 
-  const isCurrentUser = userData?._id === currentUser?._id;
+  const isCurrentUser = profile?._id === currentUser?._id;
 
-  const handleSave = (updatedUserData: any) => {
-    setEditableUserData(updatedUserData);
-    setIsEditing(false);
-  };
+  // const handleSave = (updatedUserData: any) => {
+  //   setIsEditing(false);
+  // };
 
-  const handleCancel = () => {
-    setEditableUserData(userData);
-    setIsEditing(false);
-  };
+  // const handleCancel = () => {
+  //   setIsEditing(false);
+  // };
 
-  const handleError = (error: string) => {
-    setError(error);
-  };
+  // const handleError = (error: string) => {
+  //   setError(error);
+  // };
 
-  if (!userData || !currentUser) {
+  if (!profile || !currentUser) {
     return <div>Loading...</div>;
   }
 
@@ -38,33 +37,30 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({ userData, currentUser }) =>
     <div id="web-social-personal-info">
       {isEditing ? (
         <EditPersonalInfo
-          userData={editableUserData}
-          onSave={handleSave}
-          onCancel={handleCancel}
-          onError={handleError}
+        
         />
       ) : (
         <div>
           <div className="profile-container">
-            <img src={userData.coverPhoto || ''} alt="Cover Photo" className="cover-photo" />
+            <img src={profile.coverPhoto || ''} alt="Cover Photo" className="cover-photo" />
             <div className="profile-content">
-              <img src={userData.profilePicture || ''} alt="Profile Photo" className="profile-photo" />
-              <span className="profile-name">{userData.firstName || ''} {userData.lastName || ''}</span>
-              {(isCurrentUser || currentUser.role === "ADMIN")&& userData.email && (
-                <p className="email">{userData.email}</p>
+              <img src={profile.profilePicture || ''} alt="Profile Photo" className="profile-photo" />
+              <span className="profile-name">{profile.firstName || ''} {profile.lastName || ''}</span>
+              {(isCurrentUser || currentUser.role === "ADMIN") && profile.email && (
+                <p className="email">{profile.email}</p>
               )}
               <div className="location-container">
                 <IoLocationOutline color='red' className="location-icon" />
-                <span className="location-text">{userData.location || ''}</span>
+                <span className="location-text">{profile.location || ''}</span>
               </div>
               <div className="location-container">
                 <FaLink color='#1877f2' className="location-icon" />
-                <a href={userData.website || '#'} className="location-text" target="_blank" rel="noopener noreferrer">
-                  {userData.website || 'No website'}
+                <a href={profile.website || '#'} className="location-text" target="_blank" rel="noopener noreferrer">
+                  {profile.website || 'No website'}
                 </a>
               </div>
-              <p className="bio">{userData.bio || ''}</p>
-              <p className="bio">Role: {userData.role || ''}</p>
+              <p className="bio">{profile.bio || ''}</p>
+              <p className="bio">Role: {profile.role || ''}</p>
             </div>
           </div>
           <br />

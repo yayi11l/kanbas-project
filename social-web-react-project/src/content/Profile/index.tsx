@@ -1,20 +1,22 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Header from '../../shared/components/Header';
 import PersonalInfo from './personalInfo';
 import * as client from "../../shared/client";
 import '../Profile/profile.css';
+import { setProfile, updateProfile } from './reducer';
 
 export default function ProfilePage() {
   const { currentUser } = useSelector((state: any) => state.accountReducer);
+  const profile = useSelector((state: any) => state.profileReducer.profile);
   const { uid } = useParams<{ uid?: string }>();
-  const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [isUpdatingFollow, setIsUpdatingFollow] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -30,7 +32,7 @@ export default function ProfilePage() {
         }
 
         const data = await client.findUserById(userIdToFetch);
-        setUserData(data);
+        dispatch(setProfile(data));
 
         // Check if the current user is following the profile user
         if (currentUser && uid && currentUser._id !== uid) {
@@ -45,13 +47,7 @@ export default function ProfilePage() {
     };
 
     fetchUserData();
-  }, [uid, currentUser]);
-
-  useEffect(() => {
-    if (uid && currentUser && uid === currentUser._id) {
-      navigate('/profile', { replace: true });
-    }
-  }, [uid, currentUser, navigate]);
+  }, [uid, currentUser, dispatch]);
 
   const handleFollowUnfollow = useCallback(async () => {
     if (!currentUser || !uid) {
@@ -74,21 +70,20 @@ export default function ProfilePage() {
 
       // Update follower/following counts
       const updatedUserData = await client.findUserById(uid);
-      setUserData(updatedUserData);
+      dispatch(updateProfile(updatedUserData)); // Use updateProfile to update only necessary parts
     } catch (error) {
       // Revert optimistic update if the action failed
       setIsFollowing(previousFollowState);
       console.error("Error following/unfollowing user:", error);
-      // Show error message to user
       setError(error instanceof Error ? error.message : "Failed to update follow status");
     } finally {
       setIsUpdatingFollow(false);
     }
-  }, [currentUser, uid, isFollowing]);
+  }, [currentUser, uid, isFollowing, dispatch]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
-  if (!userData) return <p>User data not available.</p>;
+  if (!profile) return <p>User data not available.</p>;
 
   const isCurrentUserProfile = !uid || (currentUser && uid === currentUser._id);
 
@@ -96,27 +91,23 @@ export default function ProfilePage() {
     <div className="profile-page">
       <Header />
       <div className="profile-container">
-        <PersonalInfo userData={userData} currentUser={currentUser} />
+        <PersonalInfo currentUser={currentUser} />
         <div className='button-container'>
           {!isCurrentUserProfile && currentUser && (
-            <button onClick={handleFollowUnfollow} className="edit-button"  disabled={isUpdatingFollow}>
-               {isUpdatingFollow ? 'Updating...' : isFollowing ? 'Unfollow' : 'Follow'}
+            <button onClick={handleFollowUnfollow} className="edit-button" disabled={isUpdatingFollow}>
+              {isUpdatingFollow ? 'Updating...' : isFollowing ? 'Unfollow' : 'Follow'}
             </button>
           )}
-          </div>
+        </div>
         <div className="profile-links-container">
           <div className="profile-links">
-            <Link to={`/profile/${userData._id}/following`}>
-              Following: <span>{userData.following.length}</span>
+            <Link to={`/profile/${profile._id}/following`}>
+              Following: <span>{profile.following?.length || 0}</span>
             </Link>
-            <Link to={`/profile/${userData._id}/followers`}>
-              Followers: <span>{userData.followers.length}</span>
+            <Link to={`/profile/${profile._id}/followers`}>
+              Followers: <span>{profile.followers?.length || 0}</span>
             </Link>
-            {/* <Link to={`/profile/${userData._id}/reviews`}>
-              Reviews: <span>{userData.reviews.length}</span>
-            </Link> */}
           </div>
-          
         </div>
       </div>
     </div>
