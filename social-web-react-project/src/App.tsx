@@ -3,7 +3,6 @@ import Home from "./content/Home";
 import Profile from "./content/Profile";
 import Followers from "./content/Profile/Activity/userActs/Followers";
 import Following from "./content/Profile/Activity/userActs/Following";
-import Reviews from "./content/Profile/Activity/postActs/Review";
 import Login from "./content/Account/Login";
 import store from "./store";
 import { Provider } from "react-redux";
@@ -11,11 +10,13 @@ import ProtectedRoute from "./shared/components/ProtectedRoute";
 import Signup from "./content/Account/Signup";
 import PostDetails from "./content/Home/Feed/Posts/PostDetails";
 import SearchResults from "./content/Search";
+import Session from "./content/Account/Session";
 
 
 function App() {
   return (
     <Provider store={store}>
+    <Session>
     <HashRouter>
       <div className="h-100">
         <Routes>
@@ -25,14 +26,14 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/profile/:uid" element={<Profile />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/posts/detail/:pid" element={<PostDetails />} />
-          <Route path="/profile/:userId/followers" element={<Followers />} />
-          <Route path="/profile/:userId/following" element={<Following />} />
-          <Route path="/profile/:userId/reviews" element={<Reviews />} />
+          <Route path="/posts/detail/:pid" element={<ProtectedRoute><PostDetails /></ProtectedRoute>} />
+          <Route path="/profile/:userId/followers" element={<ProtectedRoute><Followers /></ProtectedRoute>} />
+          <Route path="/profile/:userId/following" element={<ProtectedRoute><Following /></ProtectedRoute>} />
           <Route path="/search" element={<SearchResults />} />
         </Routes>
       </div>
     </HashRouter>
+    </Session>
     </ Provider >
   );
 }

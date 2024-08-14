@@ -1,57 +1,60 @@
-import React, { useState } from 'react';
-import * as client from "../../shared/client";
-import "../Profile/profile.css";
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setProfile, updateProfile } from './reducer';
+import { useNavigate } from 'react-router-dom';
+import * as client from "../../shared/client";
+import { updateProfile } from './reducer';
+import "../Profile/profile.css";
 
 interface EditPersonalInfoProps {
-  onSave: (updatedUserData: any) => void;
   onCancel: () => void;
   onError: (error: string) => void;
+  onSave: () => void; 
 }
 
-const EditPersonalInfo: React.FC<EditPersonalInfoProps> = () => {
-  const profile = useSelector((state: any) => state.profileReducer.profile);
+const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({ onCancel, onError,  onSave}) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const profile = useSelector((state: any) => state.profileReducer.profile);
+  const currentUser = useSelector((state: any) => state.accountReducer.currentUser);
+  const [editableUserData, setEditableUserData] = useState(profile);
   const [isSaving, setIsSaving] = useState(false);
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  const validateForm = () => {
-    const newErrors: { [key: string]: string } = {};
+  const isAdmin = currentUser.role === "ADMIN";
+  const isEditingOwnProfile = currentUser._id === profile._id;
 
-    if (!profile.firstName) newErrors.firstName = 'First name is required';
-    if (!profile.lastName) newErrors.lastName = 'Last name is required';
-    if (!profile.email) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(profile.email)) {
-      newErrors.email = 'Email is invalid';
-    }
+  useEffect(() => {
+    setEditableUserData(profile);
+  }, [profile]);
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    dispatch(updateProfile({ [name]: value }));
+    setEditableUserData((prevState: any) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
 
   const handleSave = async () => {
-    if (!validateForm()) return;
-
     setIsSaving(true);
     try {
-      const updatedData = await client.updateUser(profile?._id, profile);
-      dispatch(setProfile(updatedData));
-      // onSave(updatedData);
+      const updatedData = await client.updateUser(profile._id, editableUserData);
+      
+      if (isEditingOwnProfile) {
+        dispatch(updateProfile(updatedData));
+      } 
+      onSave();  // Call this to trigger a refetch in the parent component
+      onCancel(); 
+      
+
+      setTimeout(() => {
+        navigate(`/profile/${profile._id}`);
+      }, 0);
     } catch (error) {
-      // onError("Failed to save changes");
+      onError("Failed to save changes");
     } finally {
       setIsSaving(false);
     }
   };
-
-  if (!profile) return null;
 
   return (
     <div className="edit-personal-info">
@@ -60,37 +63,34 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = () => {
         <input
           type="text"
           name="firstName"
-          value={profile.firstName || ''}
+          value={editableUserData.firstName}
           onChange={handleChange}
         />
-        {errors.firstName && <span className="error">{errors.firstName}</span>}
       </label>
       <label>
         Last Name:
         <input
           type="text"
           name="lastName"
-          value={profile.lastName || ''}
+          value={editableUserData.lastName}
           onChange={handleChange}
         />
-        {errors.lastName && <span className="error">{errors.lastName}</span>}
       </label>
       <label>
         Email:
         <input
           type="email"
           name="email"
-          value={profile.email || ''}
+          value={editableUserData.email}
           onChange={handleChange}
         />
-        {errors.email && <span className="error">{errors.email}</span>}
       </label>
       <label>
         Location:
         <input
           type="text"
           name="location"
-          value={profile.location || ''}
+          value={editableUserData.location}
           onChange={handleChange}
         />
       </label>
@@ -98,7 +98,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = () => {
         Bio:
         <textarea
           name="bio"
-          value={profile.bio || ''}
+          value={editableUserData.bio}
           onChange={handleChange}
         />
       </label>
@@ -107,10 +107,24 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = () => {
         <input
           type="text"
           name="website"
-          value={profile.website || ''}
+          value={editableUserData.website}
           onChange={handleChange}
         />
       </label>
+      {isAdmin && !isEditingOwnProfile && (
+        <label>
+          Role:
+          <select
+            name="role"
+            value={editableUserData.role}
+            onChange={handleChange}
+          >
+            <option value="USER">User</option>
+            <option value="ADMIN">Admin</option>
+            <option value="COMPANY">Admin</option>
+          </select>
+        </label>
+      )}
       <div className="button-container">
         <button
           className="edit-button"

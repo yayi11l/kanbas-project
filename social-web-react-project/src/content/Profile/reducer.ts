@@ -1,29 +1,23 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-// interface ProfileState {
-//   firstName: string | null;
-//   lastName: string | null;
-//   location: string | null;
-//   email: string | null;
-//   bio: string | null;
-//   website: string | null;
+interface ProfileState {
+  profile: any; // Consider defining a more specific type for your profile
+}
 
-// }
-
-const initialState = {
-    profile: []
+const initialState: ProfileState = {
+  profile: {}
 };
 
 const profileSlice = createSlice({
   name: 'profile',
   initialState,
   reducers: {
-    setProfile: (state, action) => {
-        state.profile = action.payload
+    setProfile: (state, action: PayloadAction<any>) => {
+      state.profile = action.payload;
     },
-    updateProfile: (state, { payload: profileUpdate }) => {
-        state.profile = { ...state.profile, ...profileUpdate };
-      },
+    updateProfile: (state, action: PayloadAction<Partial<any>>) => {
+      state.profile = { ...state.profile, ...action.payload };
+    },
   },
 });
 

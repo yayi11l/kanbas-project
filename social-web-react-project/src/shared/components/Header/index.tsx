@@ -121,6 +121,12 @@ export default function Header() {
                   Profile
                 </div>
                 <div
+                  onClick={() => navigate("/home")}
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                >
+                  Home
+                </div>
+                <div
                   onClick={signout}
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
                 >
