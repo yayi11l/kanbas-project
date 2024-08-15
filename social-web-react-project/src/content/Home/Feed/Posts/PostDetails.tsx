@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { FaRegThumbsUp, FaThumbsUp, FaRegShareSquare } from "react-icons/fa";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
+
 import {
   fetchPostById,
   likePost,
@@ -19,6 +20,10 @@ const PostDetails = () => {
   const [error, setError] = useState<string | null>(null);
   const [newComment, setNewComment] = useState("");
   const { currentUser } = useSelector((state: any) => state.accountReducer);
+  const navigate = useNavigate();
+  const handleProfileClick = (userId: string) => {
+    navigate(`/profile/${userId}`);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -110,6 +115,8 @@ const PostDetails = () => {
                 width={40}
                 height={40}
                 alt={post.user.username}
+                onClick={() => handleProfileClick(post.user._id)}
+                
               />
               <div>
                 <p className="font-medium text-lg">{post.user.username}</p>
